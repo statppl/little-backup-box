@@ -34,7 +34,7 @@ import time
 
 class vpn(object):
 
-	def __init__(self,VPNMode):
+	def __init__(self, VPNMode):
 		#VPNMode:['OpenVPN','WireGuard']
 
 		self.VPNMode	= VPNMode
