@@ -261,7 +261,8 @@
     "tools": "Tools",
     "filebrowser": "Files",
     "view": "View",
-    "update": "update"
+    "update": "update",
+    "captive_portal": "captive portal"
   },
   "main": {
     "internal_button": "int. storage",
@@ -783,6 +784,9 @@
         "upload_not_zip": "The file you are trying to upload is not a .zip file. Please try again.",
         "upload_problem": "There was a problem with the upload. Please try again.",
         "upload_success": "Your settings file has been uploaded and this files have been installed:"
+      },
+      "keyboard": {
+        "effect_after_reboot": "The settings for the on-screen keyboard will only take effect after a restart."
       }
     },
     "wifi": {
