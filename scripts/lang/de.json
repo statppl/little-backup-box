@@ -825,7 +825,10 @@
         "CONNECTING": "verbinden ...",
         "CONNECTED": "verbunden"
       },
-      "reset_done": "Comitup zurückgesetzt"
+      "reset": {
+        "done": "zurückgesetzt",
+        "started": "Reset..."
+      }
     }
   },
   "seconds_short": "s",
@@ -905,7 +908,8 @@
       "medium_source_nvme": "Lokale NVMe Quelle",
       "medium_target_nvme": "Lokales NVMe Ziel",
       "social_publish": "zur Publikation markiert",
-      "social_published": "publiziert"
+      "social_published": "publiziert",
+      "apply": "Filter anwenden"
     },
     "images": {
       "download": "Download Original",

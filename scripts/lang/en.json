@@ -251,7 +251,10 @@
         "CONNECTING": "connecting ...",
         "CONNECTED": "connected"
       },
-      "reset_done": "Comitup reset"
+      "reset": {
+        "done": "reset",
+        "started": "Reset..."
+      }
     }
   },
   "mainmenue": {
@@ -905,7 +908,8 @@
       "medium_source_nvme": "Local NVMe source",
       "medium_target_nvme": "Local NVMe target",
       "social_publish": "reserved for publication",
-      "social_published": "published"
+      "social_published": "published",
+      "apply": "Apply filter"
     },
     "images": {
       "download": "Download original",

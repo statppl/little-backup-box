@@ -825,7 +825,10 @@
         "CONNECTING": "conectando ...",
         "CONNECTED": "conectado"
       },
-      "reset_done": "Comitup restablecer"
+      "reset": {
+        "done": "restablecer",
+        "started": "Reiniciando..."
+      }
     }
   },
   "seconds_short": "s",
@@ -905,7 +908,8 @@
       "medium_source_nvme": "Origen NVMe local",
       "medium_target_nvme": "Destino NVMe local",
       "social_publish": "marcado para publicación",
-      "social_published": "publicado"
+      "social_published": "publicado",
+      "apply": "Aplicar filtro"
     },
     "images": {
       "download": "Descargar originales",

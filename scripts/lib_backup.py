@@ -219,9 +219,16 @@ class progressmonitor(object):
 
 		# print changed progress
 		if len(self.TransferRate) > 0 and self.TransferRate[0] != ',':
-			self.TransferRate	= f", {self.TransferRate}"
+			TransferRateParts	= self.TransferRate.strip().split()
+			if len(TransferRateParts) < 2:
+				TransferRate			= f", {self.TransferRate}"
+			else:
+				TransferRateParts[0]	= f", {int(float(TransferRateParts[0]) + 0.5)}"
+				TransferRate			= " ".join(TransferRateParts)
+		else:
+			TransferRate	= ""
 
-		DisplayLine3	= f"{self.CountProgress} " + self.__lan.l('box_backup_of') + f" {self.FilesToProcess}{'+' if self.FilesToProcess_possible_more else ''}{self.TransferRate}"
+		DisplayLine3	= f"{self.CountProgress} " + self.__lan.l('box_backup_of') + f" {self.FilesToProcess}{'+' if self.FilesToProcess_possible_more else ''}{TransferRate}"
 
 		# calculate progress
 		PercentFinished	= None

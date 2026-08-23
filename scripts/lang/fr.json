@@ -825,7 +825,10 @@
         "CONNECTING": "de liaison ...",
         "CONNECTED": "connecté"
       },
-      "reset_done": "Comitup réinitialiser"
+      "reset": {
+        "done": "réinitialiser",
+        "started": "Réinitialisation..."
+      }
     }
   },
   "seconds_short": "s",
@@ -905,7 +908,8 @@
       "medium_source_nvme": "Origine NVMe locale",
       "medium_target_nvme": "Cible NVMe locale",
       "social_publish": "marqué pour publication",
-      "social_published": "publié"
+      "social_published": "publié",
+      "apply": "Appliquer le filtre"
     },
     "images": {
       "download": "Télécharger l'original",
