@@ -80,14 +80,13 @@
 						<?php
 					}
 
-					<?php /*
 					// captive portal support is still alpha
-					if (is_file($constants['const_NETWORK_PORTAL_PAGE_LINK_FILE']) && filesize($constants['const_NETWORK_PORTAL_PAGE_LINK_FILE']) > 0) {# xxx and protocol is http
-						?>
-							<li class="nav-item"><a class="nav-link<?php echo $scriptname=="captive_portal"?" active":""; ?>" href="/frame.php?page=captive_portal"><?php echo L::mainmenue_captive_portal; ?></a></li>
-						<?php
-					}
-					*/ ?>
+					// if (is_file($constants['const_NETWORK_PORTAL_PAGE_LINK_FILE']) && filesize($constants['const_NETWORK_PORTAL_PAGE_LINK_FILE']) > 0) {# xxx and protocol is http
+					// 	?>
+					// 		<li class="nav-item"><a class="nav-link<?php echo $scriptname=="captive_portal"?" active":""; ?>" href="/frame.php?page=captive_portal"><?php echo L::mainmenue_captive_portal; ?></a></li>
+					// 	<?php
+					// }
+
 				?>
 			</ul>
 		</div>
