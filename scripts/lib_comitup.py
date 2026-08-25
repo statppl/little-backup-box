@@ -38,6 +38,9 @@ import lib_setup
 class comitup(object):
 	def __init__(self):
 
+		self.WORKING_DIR = os.path.dirname(__file__)
+		self.python = shutil.which('python3')
+
 		#config
 		self.__configfile	= '/etc/comitup.conf'
 
@@ -290,7 +293,13 @@ class comitup(object):
 		if status in ['HOTSPOT', 'CONNECTING', 'CONNECTED']:
 			if status == 'CONNECTED':
 				try:
-					subprocess.run(f"/usr/bin/sh -c '{self.python} {self.WORKING_DIR}/portal_page_detector.py &'", shell=True)
+					subprocess.Popen(
+						[
+							self.python,
+							f'{self.WORKING_DIR}/portal_page_detector.py'
+						],
+						start_new_session=True
+					)
 				except:
 					print('Error: Portal page detector not started.', file=sys.stderr)
 
@@ -300,7 +309,7 @@ class comitup(object):
 			status_translated	= self.__lan.l('box_comitup_reset_done')
 
 		if status_translated is not None:
-			self.__display.message([':Comitup:', f':{status_translated}'])
+			self.__display.message([f'set:temp,time={self.__conf_DISP_FRAME_TIME * 4}', ':Comitup:', f':{status_translated}'])
 
 		# setup apache ports
 		ApachePortsConf	= '/etc/apache2/ports.conf'
@@ -329,7 +338,7 @@ class comitup(object):
 		return(status['mode'] == 'router' or status['state'] == 'HOTSPOT')
 
 	def reset(self):
-		self.__display.message([':Comitup:', f':{self.__lan.l('box_comitup_reset_started')}'])
+		self.__display.message([f'set:temp,time={self.__conf_DISP_FRAME_TIME * 4}', ':Comitup:', f':{self.__lan.l('box_comitup_reset_started')}'])
 
 		try:
 			subprocess.run(['/usr/sbin/comitup-cli', 'x'], check=True)

@@ -482,6 +482,7 @@ sudo a2enmod proxy
 sudo a2enmod proxy_http
 sudo a2enmod proxy_html
 sudo a2enmod headers
+sudo a2enmod xml2enc
 
 #enable conf php<VERSION>-fpm
 sudo a2enconf php${PHP_VERSION}-fpm
@@ -533,12 +534,16 @@ if [ "${SCRIPT_MODE}" = "install" ]; then
 	echo "ServerName little-backup-box" | sudo tee -a "/etc/apache2/apache2.conf"
 fi
 
-yes | sudo cp -f "${INSTALLER_DIR}/etc/apache2_ports.conf" "/etc/apache2/ports.conf"
-yes | sudo cp -f "${INSTALLER_DIR}/etc/apache2_conf-available_ssl-params.conf" "/etc/apache2/conf-available/ssl-params.conf"
-yes | sudo cp -f "${INSTALLER_DIR}/etc/apache2_sites-available_little-backup-box.conf" "/etc/apache2/sites-available/little-backup-box.conf"
+sudo cp -f "${INSTALLER_DIR}/etc/apache2_ports.conf" "/etc/apache2/ports.conf"
+sudo cp -f "${INSTALLER_DIR}/etc/apache2_conf-available_ssl-params.conf" "/etc/apache2/conf-available/ssl-params.conf"
+sudo cp -f "${INSTALLER_DIR}/etc/apache2_sites-available_little-backup-box.conf" "/etc/apache2/sites-available/little-backup-box.conf"
 
 sudo mkdir -p /etc/apache2/includes
 sudo touch /etc/apache2/includes/password.conf
+for src in "${INSTALLER_DIR}"/etc/apache2_includes_*.conf; do
+    name="${src##*/etc/apache2_includes_}"
+    sudo cp -f "$src" "/etc/apache2/includes/$name"
+done
 
 sudo a2enmod ssl
 sudo a2enmod headers

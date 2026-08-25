@@ -14,7 +14,7 @@
     "filebrowser": "Archivos",
     "view": "View",
     "update": "actualización",
-    "captive_portal": "portal cautivo"
+    "captive_portal": "<nobr>Portal-WiFi</nobr>"
   },
   "main": {
     "internal_button": "Almacenamiento int.",

@@ -14,7 +14,7 @@
     "filebrowser": "Des dossiers",
     "view": "View",
     "update": "mise à jour",
-    "captive_portal": "portail captif"
+    "captive_portal": "<nobr>Portail-WiFi</nobr>"
   },
   "main": {
     "internal_button": "stockage interne",

@@ -14,7 +14,7 @@
     "filebrowser": "Dateien",
     "view": "View",
     "update": "Update",
-    "captive_portal": "Captive Portal"
+    "captive_portal": "<nobr>WLAN-Portal</nobr>"
   },
   "main": {
     "internal_button": "int. Speicher",

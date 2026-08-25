@@ -532,7 +532,6 @@ function exec_command($CMD, $PARAM1, $PARAM2, $MAIL_RESULT) {
 				$COMMAND_LINE	.= ";sudo $MAIN_COMMAND";
 				$COMMAND_LINE	.= ";echo ''";
 				$COMMAND_LINE	.= ";echo 'FINISHED.'";
-				$COMMAND_LINE	.= ";sudo python3 $WORKING_DIR/lib_display.py ':" . L::config_comitup_section . "' ':" . L::cmd_reset . "'";
 				break;
 
 			default:

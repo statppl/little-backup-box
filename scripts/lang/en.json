@@ -265,7 +265,7 @@
     "filebrowser": "Files",
     "view": "View",
     "update": "update",
-    "captive_portal": "captive portal"
+    "captive_portal": "<nobr>WiFi-Portal</nobr>"
   },
   "main": {
     "internal_button": "int. storage",

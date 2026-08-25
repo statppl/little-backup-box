@@ -58,7 +58,13 @@ class display(object):
 		if self.conf_DISP == 'display' and subprocess.run(f'/usr/bin/pgrep -fa "{self.WORKING_DIR}/display.p[y]" | /usr/bin/grep -v "pgrep"', shell=True, stdout=subprocess.DEVNULL).returncode != 0:
 			# grep: returncode=1 if no matches found
 			try:
-				subprocess.run(f"/usr/bin/sh -c '{self.python} {self.WORKING_DIR}/display.py &'", shell=True)
+				subprocess.Popen(
+					[
+						self.python,
+						f'{self.WORKING_DIR}/display.py'
+					],
+					start_new_session=True
+				)
 			except:
 				print('Error: Display daemon not started', file=sys.stderr)
 
