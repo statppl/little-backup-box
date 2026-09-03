@@ -177,6 +177,7 @@ sudo DEBIAN_FRONTEND=noninteractive \
 			exfat-fuse \
 			exfatprogs \
 			ntfs-3g \
+			cifs-utils \
 			acl \
 			bindfs \
 			gphoto2 \

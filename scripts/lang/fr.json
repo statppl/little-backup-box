@@ -54,7 +54,6 @@
       "stopped": "Sauvegarde abandonnée",
       "primary": "Sauvegarde principale",
       "secondary": "Sauvegarde secondaire",
-      "secondary_skipped_unreachable": "cible injoignable - ignorée",
       "general": "Général",
       "secondary_label": "Une sauvegarde cloud doit-elle être effectuée après la sauvegarde principale?",
       "on": "sur",
@@ -75,7 +74,8 @@
     },
     "matrix": {
       "matrix": "Matrix"
-    }
+    },
+    "smb_button": "Partage SMB"
   },
   "sysinfo": {
     "temp": "Température",
@@ -524,7 +524,8 @@
         "too_long": "Mot de passe trop long. Nombre maximal de caractères :",
         "not_ascii": "Seuls les caractères ASCII sont autorisés.",
         "too_long_qr": "<strong>Attention !</strong> Le code QR WiFi ne fonctionne qu’avec des mots de passe allant jusqu’à 13 caractères.",
-        "wifi_invalid_chars": "Le code QR WiFi ne peut pas représenter « : » ni « ; »."
+        "wifi_invalid_chars": "Le code QR WiFi ne peut pas représenter « : » ni « ; ».",
+        "smb": "Mot de passe SMB"
       },
       "settings": {
         "upload_not_zip": "Le fichier que vous essayez de télécharger n'est pas un fichier .zip. Veuillez réessayer.",
@@ -555,7 +556,20 @@
         "label": "Démarrez le programme d’étalonnage sur l’écran tactile.",
         "started": "La calibration de l’écran tactile a démarré. Veuillez toucher aussi précisément que possible le centre des quatre repères successifs. Attention : les modifications ne prendront effet qu’après un redémarrage."
       }
-    }
+    },
+    "smb_section": "Partage SMB/CIFS (p. ex. Apple Time Capsule)",
+    "smb_host_header": "Serveur",
+    "smb_host_label": "Nom d'hôte ou adresse IP du serveur SMB/CIFS",
+    "smb_share_header": "Partage",
+    "smb_share_label": "Nom du dossier partagé sur le serveur (p. ex. le nom du disque de la Time Capsule)",
+    "smb_path_header": "Sous-dossier",
+    "smb_path_label": "Sous-dossier facultatif dans le partage où effectuer la sauvegarde (p. ex. LittleBackupBox)",
+    "smb_user_header": "Nom d'utilisateur",
+    "smb_user_label": "Nom d’utilisateur (laisser vide pour un accès invité)",
+    "smb_password_header": "Mot de passe",
+    "smb_password_label": "Mot de passe du serveur SMB/CIFS",
+    "smb_version_header": "Version du protocole SMB",
+    "smb_version_label": "Version du protocole mount.cifs : 1.0 pour les anciennes Apple Time Capsule / disques AirPort, 2.0 ou 3.0 pour les serveurs plus récents"
   },
   "tools": {
     "tools": "Outils",
@@ -711,7 +725,8 @@
         "social_telegram": "Telegram",
         "social_mastodon": "Mastodon",
         "social_bluesky": "Bluesky",
-        "social_matrix": "Matrix"
+        "social_matrix": "Matrix",
+        "smb": "Partage SMB"
       },
       "nvme": "NVMe SSD",
       "nvme_source": "Source USB",
@@ -736,7 +751,9 @@
         "ok": "FTP o.k."
       },
       "not_configured": "non configuré",
-      "delay_rate_limit": "Limite de débit"
+      "delay_rate_limit": "Limite de débit",
+      "secondary_skipped_unreachable": "cible injoignable - ignorée",
+      "smb": "Partage SMB"
     },
     "cronip": {
       "offline": "hors ligne",
@@ -816,7 +833,8 @@
           "ftp": "Serveur FTP de LBB",
           "telegram": "Telegram",
           "mastodon": "mastodon",
-          "bluesky": "Bluesky"
+          "bluesky": "Bluesky",
+          "smb": "SMB"
         },
         "stop": "ARRÊTER sauvegarde"
       },

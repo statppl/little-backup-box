@@ -292,6 +292,11 @@
 					$title		= L::config_alert_password_rsync;
 					break;
 
+				case 'conf_SMB_PASSWORD':
+					$title		= L::config_alert_password_smb;
+					$min_length	= 1;
+					break;
+
 				case 'conf_SOCIAL_BLUESKY_APP_PASSWORD':
 					$title		= L::config_alert_password_bluesky;
 					break;
@@ -427,6 +432,12 @@ conf_RSYNC_PORT='$conf_RSYNC_PORT'
 conf_RSYNC_USER='$conf_RSYNC_USER'
 conf_RSYNC_PASSWORD='$conf_RSYNC_PASSWORD'
 conf_RSYNC_SERVER_MODULE='$conf_RSYNC_SERVER_MODULE'
+conf_SMB_HOST='$conf_SMB_HOST'
+conf_SMB_SHARE='$conf_SMB_SHARE'
+conf_SMB_PATH='$conf_SMB_PATH'
+conf_SMB_USER='$conf_SMB_USER'
+conf_SMB_PASSWORD='$conf_SMB_PASSWORD'
+conf_SMB_VERSION='$conf_SMB_VERSION'
 conf_WIFI_COUNTRY='$conf_WIFI_COUNTRY'
 conf_WIFI_PASSWORD_TYPE='$conf_WIFI_PASSWORD_TYPE'
 conf_WIFI_PASSWORD='$conf_WIFI_PASSWORD'
@@ -1598,6 +1609,42 @@ CONFIGDATA;
 				<h3><?php echo L::config_rsync_module_header; ?></h3>
 					<label for="conf_RSYNC_SERVER_MODULE"><?php echo L::config_rsync_module_label1 .  $config_standard['conf_RSYNC_SERVER_MODULE'] . L::config_rsync_module_label2; ?></label><br />
 					<input type="text" id="conf_RSYNC_SERVER_MODULE" name="conf_RSYNC_SERVER_MODULE" size="20" value="<?php echo $config['conf_RSYNC_SERVER_MODULE']; ?>">
+			</details>
+		</div>
+
+		<div class="card" style="margin-top: 2em;">
+			<details>
+				<summary style="letter-spacing: 1px; text-transform: uppercase;"><?php echo L::config_smb_section; ?></summary>
+
+				<h3><?php echo L::config_smb_host_header; ?></h3>
+					<label for="conf_SMB_HOST"><?php echo L::config_smb_host_label; ?></label><br />
+					<input type="text" id="conf_SMB_HOST" name="conf_SMB_HOST" size="30" value="<?php echo htmlspecialchars($config['conf_SMB_HOST'], ENT_QUOTES, 'UTF-8'); ?>">
+
+				<h3><?php echo L::config_smb_share_header; ?></h3>
+					<label for="conf_SMB_SHARE"><?php echo L::config_smb_share_label; ?></label><br />
+					<input type="text" id="conf_SMB_SHARE" name="conf_SMB_SHARE" size="30" value="<?php echo htmlspecialchars($config['conf_SMB_SHARE'], ENT_QUOTES, 'UTF-8'); ?>">
+
+				<h3><?php echo L::config_smb_path_header; ?></h3>
+					<label for="conf_SMB_PATH"><?php echo L::config_smb_path_label; ?></label><br />
+					<input type="text" id="conf_SMB_PATH" name="conf_SMB_PATH" size="30" value="<?php echo htmlspecialchars($config['conf_SMB_PATH'], ENT_QUOTES, 'UTF-8'); ?>">
+
+				<h3><?php echo L::config_smb_user_header; ?></h3>
+					<label for="conf_SMB_USER"><?php echo L::config_smb_user_label; ?></label><br />
+					<input type="text" id="conf_SMB_USER" name="conf_SMB_USER" size="30" value="<?php echo htmlspecialchars($config['conf_SMB_USER'], ENT_QUOTES, 'UTF-8'); ?>">
+
+				<h3><?php echo L::config_smb_password_header; ?></h3>
+					<label for="conf_SMB_PASSWORD"><?php echo L::config_smb_password_label; ?></label><br />
+					<input type="password" id="conf_SMB_PASSWORD" name="conf_SMB_PASSWORD" size="30" value="<?php echo htmlspecialchars(base64_decode($config['conf_SMB_PASSWORD']), ENT_QUOTES, 'UTF-8'); ?>">
+
+				<h3><?php echo L::config_smb_version_header; ?></h3>
+					<label for="conf_SMB_VERSION"><?php echo L::config_smb_version_label; ?></label><br />
+					<select name="conf_SMB_VERSION" id="conf_SMB_VERSION">
+						<?php
+							foreach(array('1.0', '2.0', '2.1', '3.0', '3.1.1') as $SmbVersion) {
+								echo "<option value='" . $SmbVersion . "'" . ($config['conf_SMB_VERSION'] == $SmbVersion ? " selected" : "") . ">" . $SmbVersion . "</option>";
+							}
+						?>
+					</select>
 			</details>
 		</div>
 

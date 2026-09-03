@@ -52,6 +52,22 @@ function get_secondary_backup_selector($fieldname, $CloudServices, $config, $NVM
 		<?php
 			}
 
+			if (! ($config["conf_SMB_HOST"]=="" or $config["conf_SMB_SHARE"]=="")) {
+		?>
+				<optgroup label="&rarr; <?php echo L::main_smb_button; ?>">
+					<option value="usb smb" <?php echo $BACKUP_DEFAULT_SOURCE2 . " " . $BACKUP_DEFAULT_TARGET2=="usb smb"?" selected":""; ?>><?php echo L::main_usb_button . L::right_arrow . L::main_smb_button; ?></option>
+					<?php
+						if ($NVMe_available) {
+							?>
+								<option value="nvme smb" <?php echo $BACKUP_DEFAULT_SOURCE2 . " " . $BACKUP_DEFAULT_TARGET2=="nvme smb"?" selected":""; ?>><?php echo L::main_nvme_button . L::right_arrow . L::main_smb_button; ?></option>
+							<?php
+						}
+					?>
+					<option value="internal smb" <?php echo $BACKUP_DEFAULT_SOURCE2 . " " . $BACKUP_DEFAULT_TARGET2=="internal smb"?" selected":""; ?>><?php echo L::main_internal_button . L::right_arrow . L::main_smb_button; ?></option>
+				</optgroup>
+		<?php
+			}
+
 			foreach($CloudServices as $CloudService) {
 		?>
 				<optgroup label="&rarr; <?php echo $CloudService; ?>">

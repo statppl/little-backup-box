@@ -54,7 +54,6 @@
       "stopped": "Backup abgebrochen",
       "primary": "Primäres Backup",
       "secondary": "Sekundärs Backup",
-      "secondary_skipped_unreachable": "Ziel nicht erreichbar - übersprungen",
       "general": "Allgemein",
       "secondary_label": "Soll nach dem primären Backup ein Cloud-Backup durchgeführt werden?",
       "on": "auf",
@@ -75,7 +74,8 @@
     },
     "matrix": {
       "matrix": "Matrix"
-    }
+    },
+    "smb_button": "SMB-Freigabe"
   },
   "sysinfo": {
     "temp": "Temperatur",
@@ -524,7 +524,8 @@
         "too_long": "Passwort zu lang. Maximale Zeichenlänge:",
         "not_ascii": "Nur ASCII-Zeichen sind erlaubt.",
         "too_long_qr": "<strong>Achtung!</strong> Der WIFI-QR-Code funktioniert nur für Passwörter bis zu einer Länge von 13 Zeichen.",
-        "wifi_invalid_chars": "Der WiFi-QR-Code kann weder „:“ noch „;“ darstellen."
+        "wifi_invalid_chars": "Der WiFi-QR-Code kann weder „:“ noch „;“ darstellen.",
+        "smb": "SMB-Passwort"
       },
       "settings": {
         "upload_not_zip": "Die Datei, die Sie hochladen möchten, ist keine ZIP-Datei. Bitte versuche es erneut.",
@@ -555,7 +556,20 @@
         "label": "Das Kalibrierungsprogramm auf dem Touchscreen starten.",
         "started": "Die Kalibrierung des Touchscreens wurde gestartet. Bitte tippen Sie möglichst exakt in die Mitte der vier aufeinanderfolgenden Markierungen. Achtung: Die Änderungen werden erst nach einem Neustart wirksam."
       }
-    }
+    },
+    "smb_section": "SMB-/CIFS-Freigabe (z. B. Apple Time Capsule)",
+    "smb_host_header": "Server",
+    "smb_host_label": "Hostname oder IP-Adresse des SMB-/CIFS-Servers",
+    "smb_share_header": "Freigabe",
+    "smb_share_label": "Name des freigegebenen Ordners auf dem Server (z. B. der Name der Time-Capsule-Festplatte)",
+    "smb_path_header": "Unterordner",
+    "smb_path_label": "Optionaler Unterordner innerhalb der Freigabe, in den gesichert wird (z. B. LittleBackupBox)",
+    "smb_user_header": "Benutzername",
+    "smb_user_label": "Benutzername (für Gastzugriff leer lassen)",
+    "smb_password_header": "Passwort",
+    "smb_password_label": "Passwort für den SMB-/CIFS-Server",
+    "smb_version_header": "SMB-Protokollversion",
+    "smb_version_label": "mount.cifs-Protokollversion: 1.0 für alte Apple Time Capsules / AirPort-Laufwerke, 2.0 oder 3.0 für neuere Server"
   },
   "tools": {
     "tools": "Werkzeug",
@@ -711,7 +725,8 @@
         "social_telegram": "Telegram",
         "social_mastodon": "Mastodon",
         "social_bluesky": "Bluesky",
-        "social_matrix": "Matrix"
+        "social_matrix": "Matrix",
+        "smb": "SMB-Freigabe"
       },
       "nvme": "NVMe SSD",
       "nvme_source": "USB-Quelle",
@@ -736,7 +751,9 @@
         "ok": "FTP o.k."
       },
       "not_configured": "nicht konfiguriert",
-      "delay_rate_limit": "Posting-Sperre"
+      "delay_rate_limit": "Posting-Sperre",
+      "secondary_skipped_unreachable": "Ziel nicht erreichbar - übersprungen",
+      "smb": "SMB-Freigabe"
     },
     "cronip": {
       "offline": "offline",
@@ -816,7 +833,8 @@
           "ftp": "LBBs FTP-Server",
           "telegram": "Telegram",
           "mastodon": "mastodon",
-          "bluesky": "Bluesky"
+          "bluesky": "Bluesky",
+          "smb": "SMB"
         },
         "stop": "STOP Backup"
       },

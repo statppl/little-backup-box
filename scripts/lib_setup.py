@@ -326,6 +326,12 @@ class setup(object):
 					'conf_RSYNC_USER':									{'value': '', 'type': 'str'},
 					'conf_RSYNC_PASSWORD':								{'value': '', 'type': 'str'},
 					'conf_RSYNC_SERVER_MODULE':							{'value': 'little-backup-box', 'type': 'str'},
+					'conf_SMB_HOST':									{'value': '', 'type': 'str'},
+					'conf_SMB_SHARE':									{'value': '', 'type': 'str'},
+					'conf_SMB_PATH':									{'value': '', 'type': 'str'},
+					'conf_SMB_USER':									{'value': '', 'type': 'str'},
+					'conf_SMB_PASSWORD':								{'value': '', 'type': 'str'},
+					'conf_SMB_VERSION':									{'value': '1.0', 'type': 'str'},
 					'conf_WIFI_COUNTRY':								{'value': 'GB', 'type': 'str'},
 					'conf_WIFI_PASSWORD_TYPE':							{'value': 'static', 'type': 'str'}, # use password from 'static' or 'dynamic' (for wifi by qr only)
 					'conf_WIFI_PASSWORD':								{'value': '.', 'type': 'str'}, # '.' is recogniced as marker of a new variable
@@ -378,6 +384,7 @@ class setup(object):
 					'const_MOUNTPOINT_TECH_NVME_SOURCE':			{'type': 'str'},
 					'const_MOUNTPOINT_CLOUD_TARGET':				{'type': 'str'},
 					'const_MOUNTPOINT_CLOUD_SOURCE':				{'type': 'str'},
+					'const_MOUNTPOINT_SMB_TARGET':					{'type': 'str'},
 					'const_MOUNT_LOCAL_TIMEOUT':					{'type': 'int'},
 					'const_MOUNT_CLOUD_TIMEOUT':					{'type': 'int'},
 					'const_INTERNAL_BACKUP_DIR':					{'type': 'str'},

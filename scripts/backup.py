@@ -181,7 +181,7 @@ class backup(object):
 		self.__break_generateThumbnails	= False
 
 		# define TransferMode for _non_ camera transfers
-		self.TransferMode	= 'rsync' if (self.SourceStorageType in ['anyusb', 'usb', 'internal', 'nvme'] and self.TargetStorageType in ['anyusb', 'usb', 'internal', 'nvme']) or self.SourceStorageType == 'cloud_rsync' or self.TargetStorageType == 'cloud_rsync' else 'rclone'
+		self.TransferMode	= 'rsync' if (self.SourceStorageType in ['anyusb', 'usb', 'internal', 'nvme'] and self.TargetStorageType in ['anyusb', 'usb', 'internal', 'nvme']) or self.SourceStorageType in ['cloud_rsync', 'smb'] or self.TargetStorageType in ['cloud_rsync', 'smb'] else 'rclone'
 
 		CloudSyncMethods	= self.conf_BACKUP_SYNC_METHOD_CLOUDS.split('|;|')
 		for CloudSyncMethod in CloudSyncMethods:
@@ -232,7 +232,7 @@ class backup(object):
 		# Set the PWR LED to blink short to indicate waiting for the target device
 		lib_system.rpi_leds(led='PWR', trigger='timer', delay_on=250, delay_off=750, brightness=1)
 
-		if self.TargetStorageType in ['usb', 'internal', 'nvme', 'cloud', 'cloud_rsync', 'social']:
+		if self.TargetStorageType in ['usb', 'internal', 'nvme', 'cloud', 'cloud_rsync', 'smb', 'social']:
 			self.TargetDevice	= lib_storage.storage(StorageName=TargetName, Role=lib_storage.role_Target, WaitForDevice=True, DeviceIdentifierPresetThis=self.DeviceIdentifierPresetTarget, DeviceIdentifierPresetOther=self.DeviceIdentifierPresetSource)
 			self.TargetDevice.mount()
 		else:
@@ -1742,7 +1742,10 @@ if __name__ == "__main__":
 	SocialServices	= lib_socialmedia.socialmedia().get_social_services()
 	SocialServices	= [f'social:{SocialService}' for SocialService in SocialServices]
 
-	TargetChoices	= ['usb', 'internal', 'nvme'] + CloudServices + ['cloud_rsync'] + SocialServices
+	# SMB/CIFS target (e.g. Apple Time Capsule); always offered like cloud_rsync, configured via the web UI
+	SmbChoices	= ['smb']
+
+	TargetChoices	= ['usb', 'internal', 'nvme'] + CloudServices + ['cloud_rsync'] + SmbChoices + SocialServices
 	parser.add_argument(
 		'--TargetName',
 		'-t',
@@ -1848,7 +1851,7 @@ if __name__ == "__main__":
 		help=f'Source name, one of {SecSourceChoices}'
 	)
 
-	SecTargetChoices	= CloudServices + ['cloud_rsync']
+	SecTargetChoices	= CloudServices + ['cloud_rsync'] + SmbChoices
 	parser.add_argument(
 		'--SecTargetName',
 		'-2t',
@@ -1887,8 +1890,7 @@ if __name__ == "__main__":
 
 	# skip the secondary backup if its target is unreachable (e.g. the box is away from home)
 	if SecondaryBackupFollows and setup.get_val('conf_BACKUP_DEFAULT2_SKIP_IF_UNREACHABLE'):
-		SecTargetStorageType, SecTargetService	= lib_storage.extractService(args['SecTargetName'])
-		if SecTargetStorageType == 'cloud' and not lib_storage.cloud_remote_reachable(os.path.join(const_MEDIA_DIR, const_RCLONE_CONFIG_FILE), SecTargetService):
+		if not lib_storage.secondary_target_reachable(setup, args['SecTargetName']):
 			display.message([f":{lan.l('box_backup_secondary')}", f":{lan.l('box_backup_secondary_skipped_unreachable')}"])
 			SecondaryBackupFollows	= False
 
@@ -1897,7 +1899,7 @@ if __name__ == "__main__":
 								SecondaryBackupFollows and \
 								(args['TargetName'] == args['SecSourceName']) and \
 								(args['TargetName'] in ['internal', 'usb', 'nvme']) and \
-								(lib_storage.extractService(args['SecTargetName'])[0] in ['cloud', 'cloud_rsync'])
+								(lib_storage.extractService(args['SecTargetName'])[0] in ['cloud', 'cloud_rsync', 'smb'])
 	)
 
 	# primary backup

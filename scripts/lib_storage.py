@@ -26,6 +26,7 @@ import os
 import pathlib
 import random
 import re
+import socket
 from string import digits
 import subprocess
 import sys
@@ -88,6 +89,8 @@ class storage(object):
 		self.__const_MOUNTPOINT_CLOUD_TARGET					= self.__setup.get_val('const_MOUNTPOINT_CLOUD_TARGET')
 		self.__const_MOUNTPOINT_CLOUD_SOURCE					= self.__setup.get_val('const_MOUNTPOINT_CLOUD_SOURCE')
 
+		self.__const_MOUNTPOINT_SMB_TARGET						= self.__setup.get_val('const_MOUNTPOINT_SMB_TARGET')
+
 		self.__const_INTERNAL_BACKUP_DIR						= self.__setup.get_val('const_INTERNAL_BACKUP_DIR')
 		self.__const_LBB_FTP_BACKUP_SUB_DIR						= self.__setup.get_val('const_LBB_FTP_BACKUP_SUB_DIR')
 
@@ -125,7 +128,7 @@ class storage(object):
 		self.SubPathsAtSource		= ['']
 		self.SubPathAtTarget		= '' # subpath below targets MountPoint ('internal/xyz')
 
-		self.mountable	= self.StorageType in ['usb', 'internal', 'nvme' ,'cloud']
+		self.mountable	= self.StorageType in ['usb', 'internal', 'nvme' ,'cloud', 'smb']
 		self.isLocal	= self.StorageType in ['usb', 'internal', 'nvme', 'camera']
 		self.FS_Type	= ''
 
@@ -144,6 +147,8 @@ class storage(object):
 			mounted	= self.__mount_cloud(TimeOutActive=TimeOutActive!=False)
 		elif self.StorageType == 'cloud_rsync':
 			mounted	= self.__mount_cloud_rsync()
+		elif self.StorageType == 'smb':
+			mounted	= self.__mount_smb()
 		elif self.StorageType == 'ftp':
 			mounted	= self.__mount_ftp()
 		elif self.StorageType == 'social':
@@ -378,6 +383,74 @@ class storage(object):
 			self.LbbDeviceID		= conf_RSYNC_SERVER_MODULE
 
 		return(configured)
+
+	def __mount_smb(self):
+		# mounts an SMB/CIFS share (e.g. an Apple Time Capsule) as a local target via mount.cifs.
+		# Connection details come from the conf_SMB_* settings. Target role only.
+
+		conf_SMB_HOST		= self.__setup.get_val('conf_SMB_HOST').strip()
+		conf_SMB_SHARE		= self.__setup.get_val('conf_SMB_SHARE').strip().strip('/')
+		conf_SMB_PATH		= self.__setup.get_val('conf_SMB_PATH').strip().strip('/')
+		conf_SMB_USER		= self.__setup.get_val('conf_SMB_USER').strip()
+		conf_SMB_VERSION	= self.__setup.get_val('conf_SMB_VERSION').strip() or '1.0'
+		try:
+			conf_SMB_PASSWORD	= base64.b64decode(self.__setup.get_val('conf_SMB_PASSWORD')).decode('utf-8')
+		except:
+			conf_SMB_PASSWORD	= ''
+
+		if not (conf_SMB_HOST and conf_SMB_SHARE and self.MountPoint):
+			self.__log.message('mount smb: not configured (need conf_SMB_HOST and conf_SMB_SHARE)', 2)
+			return(False)
+
+		self.umount()
+
+		MOUNTED	= self.mounted()
+
+		if not MOUNTED:
+			self.__clean_mountpoint()
+			self.createPath()
+
+			self.__display.message([f":{self.__lan.l('box_backup_connect_target_1')}", f":{self.__lan.l('box_backup_connect_target_2')}"])
+
+			MountOptions	= f"vers={conf_SMB_VERSION},uid={self.__mount_uid},gid={self.__mount_gid},file_mode=0770,dir_mode=0770,iocharset=utf8,nounix,noserverino,nobrl"
+
+			CredentialsFile	= None
+			if conf_SMB_USER:
+				CredentialsFile	= '/run/lbb_smb_credentials'
+				try:
+					with open(CredentialsFile, 'w') as CredentialsHandle:
+						CredentialsHandle.write(f"username={conf_SMB_USER}\npassword={conf_SMB_PASSWORD}\n")
+					os.chmod(CredentialsFile, 0o600)
+					MountOptions	+= f",credentials={CredentialsFile}"
+				except:
+					MountOptions	+= f",username={conf_SMB_USER},password={conf_SMB_PASSWORD}"
+					CredentialsFile	= None
+			else:
+				MountOptions	+= ",guest"
+
+			Command	= ['/usr/bin/mount', '-t', 'cifs', f"//{conf_SMB_HOST}/{conf_SMB_SHARE}", self.MountPoint, '-o', MountOptions]
+			try:
+				subprocess.run(Command, stderr=subprocess.PIPE, timeout=45)
+			except Exception as ExceptionText:
+				self.__log.message(f"mount smb //{conf_SMB_HOST}/{conf_SMB_SHARE}: {ExceptionText}", 2)
+
+			if CredentialsFile:
+				try:
+					os.remove(CredentialsFile)
+				except:
+					pass
+
+			MOUNTED	= self.mounted()
+
+		if MOUNTED:
+			self.CloudBaseDir	= conf_SMB_PATH
+			self.__display_storage_properties()
+		else:
+			self.umount(silent=True)
+
+		self.__log.message(f"mount smb //{conf_SMB_HOST}/{conf_SMB_SHARE} at {self.MountPoint}: {MOUNTED}", 3)
+
+		return(MOUNTED)
 
 	def __mount_internal(self):
 
@@ -718,6 +791,8 @@ class storage(object):
 		if (self.StorageType == 'cloud') and self.ServiceName:
 			MountPointSearch	= f" {MountPoint} "
 			Command	= f"/usr/bin/mount -l | /usr/bin/grep '{MountPointSearch}' | /usr/bin/grep '{self.ServiceName}'"
+		elif self.StorageType == 'smb':
+			Command	= f"/usr/bin/mount -l | /usr/bin/grep ' on {MountPoint} type '"
 		else:
 			MountPointSearch	= rf'MOUNTPOINT="{MountPoint}"\|MOUNTPOINT="{self.__TechMountPoint}"' if self.__TechMountPoint else f'MOUNTPOINT="{MountPoint}"'
 			Command	= f"/usr/bin/lsblk -p -P -o PATH,MOUNTPOINT,UUID,FSTYPE | /usr/bin/grep '{MountPointSearch}'"
@@ -838,6 +913,9 @@ class storage(object):
 		elif self.StorageType == 'internal':
 			self.__TechMountPoint	= ''
 			self.MountPoint			= os.path.join(self.__const_MEDIA_DIR, self.__const_INTERNAL_BACKUP_DIR)
+		elif self.StorageType == 'smb':
+			self.__TechMountPoint	= ''
+			self.MountPoint			= os.path.join(self.__const_MEDIA_DIR, self.__const_MOUNTPOINT_SMB_TARGET)
 		elif self.StorageType == 'ftp':
 			if not self.PartnerDevice is None:
 				self.MountPoint	= os.path.join(self.PartnerDevice.MountPoint, self.__const_LBB_FTP_BACKUP_SUB_DIR)
@@ -956,6 +1034,7 @@ def get_mountPoints(setup, parts, path_list_only):
 
 	const_MOUNTPOINT_CLOUD_TARGET			= setup.get_val('const_MOUNTPOINT_CLOUD_TARGET')
 	const_MOUNTPOINT_CLOUD_SOURCE			= setup.get_val('const_MOUNTPOINT_CLOUD_SOURCE')
+	const_MOUNTPOINT_SMB_TARGET				= setup.get_val('const_MOUNTPOINT_SMB_TARGET')
 
 	mountPoints	= {}
 
@@ -989,7 +1068,8 @@ def get_mountPoints(setup, parts, path_list_only):
 		mountPoints.update(
 			{
 				os.path.join(const_MEDIA_DIR, const_MOUNTPOINT_CLOUD_TARGET):		'target_cloud',
-				os.path.join(const_MEDIA_DIR, const_MOUNTPOINT_CLOUD_SOURCE):		'source_cloud'
+				os.path.join(const_MEDIA_DIR, const_MOUNTPOINT_CLOUD_SOURCE):		'source_cloud',
+				os.path.join(const_MEDIA_DIR, const_MOUNTPOINT_SMB_TARGET):			'target_smb'
 			}
 		)
 
@@ -1343,6 +1423,33 @@ def cloud_remote_reachable(RCLONE_CONFIG_FILE, ServiceName, timeout=8):
 		return(Result.returncode == 0)
 	except Exception:
 		return(False)
+
+def host_reachable(host, port, timeout=5):
+	# True if a TCP connection to host:port can be established within timeout seconds.
+
+	if not host:
+		return(False)
+	try:
+		with socket.create_connection((host, int(port)), timeout=timeout):
+			return(True)
+	except Exception:
+		return(False)
+
+def secondary_target_reachable(setup, SecTargetName):
+	# Used to skip the secondary backup when the box is away from the target network.
+
+	StorageType, ServiceName	= extractService(SecTargetName)
+
+	if StorageType == 'cloud':
+		RCLONE_CONFIG_FILE	= os.path.join(setup.get_val('const_MEDIA_DIR'), setup.get_val('const_RCLONE_CONFIG_FILE'))
+		return(cloud_remote_reachable(RCLONE_CONFIG_FILE, ServiceName))
+	elif StorageType == 'smb':
+		return(host_reachable(setup.get_val('conf_SMB_HOST').strip(), 445))
+	elif StorageType == 'cloud_rsync':
+		return(host_reachable(setup.get_val('conf_RSYNC_SERVER').strip(), setup.get_val('conf_RSYNC_PORT').strip() or 873))
+
+	# unknown target type: don't block the backup
+	return(True)
 
 
 
