@@ -11,6 +11,7 @@
     "backup": {
       "primary": "Primary backup",
       "secondary": "Secondary backup",
+      "secondary_skipped_unreachable": "target unreachable - skipped",
       "storage_size": "size",
       "storage_used": "used",
       "storage_free": "free",
@@ -441,7 +442,11 @@
       "default_header2": "Default secondary backup mode (network backups only)",
       "default_label": "Select the default backup-mode:",
       "default_label2": "Select a secondary default backup-mode to run after the primary:",
-      "update_exif_desc": "New media without their own rating receive the standard rating. If possible, this is written to the original or a sidecar file."
+      "update_exif_desc": "New media without their own rating receive the standard rating. If possible, this is written to the original or a sidecar file.",
+      "media_only_label": "Back up media files only (photos, video, audio)",
+      "media_only_desc": "When enabled, only files with one of the extensions below are copied to the backup targets. Everything else (sidecars, catalogs, .THM/.CTG, text files, ...) is skipped. This applies to the primary and the secondary backup.",
+      "media_only_ext_label": "Allowed media file extensions (separated by semicolons, without dot; case is ignored)",
+      "default2_skip_if_unreachable_label": "Skip the secondary backup when its target cannot be reached (e.g. when the box is away from home)"
     },
     "imageviewer": {
       "section": "Image viewer View",

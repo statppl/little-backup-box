@@ -170,6 +170,9 @@ class backup(object):
 		self.const_FILE_EXTENSIONS_LIST_AUDIO			= self.__setup.get_val('const_FILE_EXTENSIONS_LIST_AUDIO')
 		self.const_FILE_EXTENSIONS_LIST_TEXT			= self.__setup.get_val('const_FILE_EXTENSIONS_LIST_TEXT')
 
+		self.conf_BACKUP_MEDIA_ONLY					= self.__setup.get_val('conf_BACKUP_MEDIA_ONLY')
+		self.conf_BACKUP_MEDIA_ONLY_EXTENSIONS			= self.__setup.get_val('conf_BACKUP_MEDIA_ONLY_EXTENSIONS')
+
 		# Common variables
 		self.SourceDevice				= None
 		self.TargetDevice				= None
@@ -341,7 +344,7 @@ class backup(object):
 			if self.move_files:
 				syncCommand	+= ['--remove-source-files']
 
-			syncCommand	+= ExcludeOptions
+			syncCommand	+= ExcludeOptions + self.get_MediaFilterOptions('rsync')
 
 			if dry_run:
 				syncCommand	+= ['--dry-run']
@@ -374,12 +377,42 @@ class backup(object):
 				'--ignore-case',
 				'--no-update-modtime',
 				'--no-update-dir-modtime'
-			] + ExcludeOptions
+			] + ExcludeOptions + self.get_MediaFilterOptions('rclone')
 
 			if dry_run:
 				syncCommand	+= ['--one-way']
 
 		return(syncCommand)
+
+	def get_MediaFilterOptions(self, TransferMode):
+		# When conf_BACKUP_MEDIA_ONLY is active, restrict the transfer to media files
+		# (photos, video, audio) by file extension. Returns extra arguments to be appended
+		# _after_ the path based ExcludeOptions so those still take precedence.
+
+		if not self.conf_BACKUP_MEDIA_ONLY:
+			return([])
+
+		Extensions	= [Extension.strip().lower() for Extension in self.conf_BACKUP_MEDIA_ONLY_EXTENSIONS.split(';') if Extension.strip()]
+		if not Extensions:
+			return([])
+
+		if TransferMode == 'rsync':
+			# rsync patterns are case sensitive; build a case insensitive glob per extension
+			# (e.g. 'jpg' -> '[Jj][Pp][Gg]')
+			def case_insensitive_glob(Extension):
+				return(''.join(f'[{Character.lower()}{Character.upper()}]' if Character.isalpha() else Character for Character in Extension))
+
+			MediaFilterOptions	= ['--include=*/']
+			for Extension in Extensions:
+				MediaFilterOptions	+= [f'--include=*.{case_insensitive_glob(Extension)}']
+			MediaFilterOptions	+= ['--exclude=*', '--prune-empty-dirs']
+			return(MediaFilterOptions)
+
+		elif TransferMode == 'rclone':
+			# rclone already receives --ignore-case in get_syncCommand()
+			return(['--include', '*.{' + ','.join(Extensions) + '}'])
+
+		return([])
 
 	def calculate_files_to_sync(self, singleSubPathsAtSource=None):
 
@@ -1851,6 +1884,13 @@ if __name__ == "__main__":
 		(not args['SecTargetName'] is None) and \
 		(args['SecTargetName'] != '') \
 	) == True # else could be None
+
+	# skip the secondary backup if its target is unreachable (e.g. the box is away from home)
+	if SecondaryBackupFollows and setup.get_val('conf_BACKUP_DEFAULT2_SKIP_IF_UNREACHABLE'):
+		SecTargetStorageType, SecTargetService	= lib_storage.extractService(args['SecTargetName'])
+		if SecTargetStorageType == 'cloud' and not lib_storage.cloud_remote_reachable(os.path.join(const_MEDIA_DIR, const_RCLONE_CONFIG_FILE), SecTargetService):
+			display.message([f":{lan.l('box_backup_secondary')}", f":{lan.l('box_backup_secondary_skipped_unreachable')}"])
+			SecondaryBackupFollows	= False
 
 	# generate thumbnails in secondary backup while uploading?
 	shiftGenerateThumbnails	= ( \

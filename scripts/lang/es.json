@@ -54,6 +54,7 @@
       "stopped": "Copia se cancelada",
       "primary": "Ejecución principal",
       "secondary": "Ejecución secundaria",
+      "secondary_skipped_unreachable": "destino inaccesible - omitido",
       "general": "General",
       "secondary_label": "¿Se debe realizar una copia de seguridad en la nube después de la copia de seguridad principal?",
       "on": "en",
@@ -179,7 +180,11 @@
       "default_header2": "Modo de respaldo secundario predeterminado (solo respaldos de red)",
       "default_label": "Seleccione el modo de copia de seguridad predeterminado:",
       "default_label2": "Seleccione un modo de copia de seguridad predeterminado secundario para ejecutar después del principal:",
-      "update_exif_desc": "Los nuevos archivos multimedia que no tienen su propia calificación reciben la calificación estándar. Si es posible, esta se escribe en el archivo original o en un archivo adjunto."
+      "update_exif_desc": "Los nuevos archivos multimedia que no tienen su propia calificación reciben la calificación estándar. Si es posible, esta se escribe en el archivo original o en un archivo adjunto.",
+      "media_only_label": "Copiar solo archivos multimedia (fotos, vídeo, audio)",
+      "media_only_desc": "Si se activa, solo se copian a los destinos de copia de seguridad los archivos con una de las extensiones indicadas abajo. Todo lo demás (archivos adjuntos, catálogos, .THM/.CTG, archivos de texto, ...) se omite. Se aplica a la copia primaria y a la secundaria.",
+      "media_only_ext_label": "Extensiones de archivo multimedia permitidas (separadas por punto y coma, sin punto; no distingue mayúsculas)",
+      "default2_skip_if_unreachable_label": "Omitir la copia secundaria cuando su destino no sea accesible (por ejemplo, cuando la caja está fuera de casa)"
     },
     "imageviewer": {
       "section": "Visor de imágenes View",

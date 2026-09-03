@@ -54,6 +54,7 @@
       "stopped": "Sauvegarde abandonnée",
       "primary": "Sauvegarde principale",
       "secondary": "Sauvegarde secondaire",
+      "secondary_skipped_unreachable": "cible injoignable - ignorée",
       "general": "Général",
       "secondary_label": "Une sauvegarde cloud doit-elle être effectuée après la sauvegarde principale?",
       "on": "sur",
@@ -179,7 +180,11 @@
       "default_header2": "Mode de sauvegarde secondaire par défaut (sauvegardes réseau uniquement)",
       "default_label": "Sélectionnez le mode de sauvegarde par défaut :",
       "default_label2": "Sélectionnez un mode de sauvegarde secondaire par défaut à exécuter après le principal :",
-      "update_exif_desc": "Les nouveaux médias sans évaluation propre reçoivent l'évaluation standard. Si possible, celle-ci est inscrite dans le fichier d'origine ou dans un fichier annexe."
+      "update_exif_desc": "Les nouveaux médias sans évaluation propre reçoivent l'évaluation standard. Si possible, celle-ci est inscrite dans le fichier d'origine ou dans un fichier annexe.",
+      "media_only_label": "Sauvegarder uniquement les fichiers multimédias (photos, vidéo, audio)",
+      "media_only_desc": "Si activé, seuls les fichiers portant l'une des extensions ci-dessous sont copiés vers les cibles de sauvegarde. Tout le reste (fichiers annexes, catalogues, .THM/.CTG, fichiers texte, ...) est ignoré. Ceci s'applique à la sauvegarde primaire et secondaire.",
+      "media_only_ext_label": "Extensions de fichiers multimédias autorisées (séparées par des points-virgules, sans point ; la casse est ignorée)",
+      "default2_skip_if_unreachable_label": "Ignorer la sauvegarde secondaire lorsque sa cible est injoignable (par exemple lorsque la box n'est pas à la maison)"
     },
     "imageviewer": {
       "section": "Visionneuse d'images View",

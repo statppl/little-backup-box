@@ -54,6 +54,7 @@
       "stopped": "Backup abgebrochen",
       "primary": "Primäres Backup",
       "secondary": "Sekundärs Backup",
+      "secondary_skipped_unreachable": "Ziel nicht erreichbar - übersprungen",
       "general": "Allgemein",
       "secondary_label": "Soll nach dem primären Backup ein Cloud-Backup durchgeführt werden?",
       "on": "auf",
@@ -179,7 +180,11 @@
       "default_header2": "Standardmäßiger sekundärer Sicherungsmodus (nur Netzwerk-Backups)",
       "default_label": "Wählen Sie den Standard-Backup-Modus:",
       "default_label2": "Wählen Sie einen sekundären Standard-Sicherungsmodus aus, der nach dem primären ausgeführt werden soll:",
-      "update_exif_desc": "Neue Medien ohne eigene Bewertung erhalten die Standardbewertung. Falls möglich, wird diese in die Originaldatei oder eine Sidecar-Datei geschrieben."
+      "update_exif_desc": "Neue Medien ohne eigene Bewertung erhalten die Standardbewertung. Falls möglich, wird diese in die Originaldatei oder eine Sidecar-Datei geschrieben.",
+      "media_only_label": "Nur Mediendateien sichern (Fotos, Video, Audio)",
+      "media_only_desc": "Wenn aktiviert, werden nur Dateien mit einer der unten angegebenen Endungen auf die Sicherungsziele kopiert. Alles andere (Sidecar-Dateien, Kataloge, .THM/.CTG, Textdateien, ...) wird übersprungen. Dies gilt für die primäre und die sekundäre Sicherung.",
+      "media_only_ext_label": "Erlaubte Medien-Dateiendungen (durch Semikolon getrennt, ohne Punkt; Groß-/Kleinschreibung wird ignoriert)",
+      "default2_skip_if_unreachable_label": "Sekundäre Sicherung überspringen, wenn das Ziel nicht erreichbar ist (z. B. wenn die Box nicht zu Hause ist)"
     },
     "imageviewer": {
       "section": "Bildbetrachter View",

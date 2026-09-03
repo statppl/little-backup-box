@@ -227,6 +227,8 @@
 
 		$conf_BACKUP_DEFAULT_MOVE_FILES				= isset($conf_BACKUP_DEFAULT_MOVE_FILES)?'true':'false';
 		$conf_BACKUP_DEFAULT2_MOVE_FILES			= isset($conf_BACKUP_DEFAULT2_MOVE_FILES)?'true':'false';
+		$conf_BACKUP_DEFAULT2_SKIP_IF_UNREACHABLE	= isset($conf_BACKUP_DEFAULT2_SKIP_IF_UNREACHABLE)?'true':'false';
+		$conf_BACKUP_MEDIA_ONLY					= isset($conf_BACKUP_MEDIA_ONLY)?'true':'false';
 		$conf_BACKUP_DEFAULT_GENERATE_THUMBNAILS	= isset($conf_BACKUP_DEFAULT_GENERATE_THUMBNAILS)?'true':'false';
 		$conf_BACKUP_MOVE_FILES						= isset($conf_BACKUP_MOVE_FILES)?'true':'false';
 		$conf_POWER_OFF								= isset($conf_POWER_OFF)?'true':'false';
@@ -348,6 +350,9 @@ conf_BACKUP_DEFAULT_GENERATE_THUMBNAILS=$conf_BACKUP_DEFAULT_GENERATE_THUMBNAILS
 conf_BACKUP_DEFAULT_SOURCE2='$conf_BACKUP_DEFAULT_SOURCE2'
 conf_BACKUP_DEFAULT_TARGET2='$conf_BACKUP_DEFAULT_TARGET2'
 conf_BACKUP_DEFAULT2_MOVE_FILES=$conf_BACKUP_DEFAULT2_MOVE_FILES
+conf_BACKUP_DEFAULT2_SKIP_IF_UNREACHABLE=$conf_BACKUP_DEFAULT2_SKIP_IF_UNREACHABLE
+conf_BACKUP_MEDIA_ONLY=$conf_BACKUP_MEDIA_ONLY
+conf_BACKUP_MEDIA_ONLY_EXTENSIONS='$conf_BACKUP_MEDIA_ONLY_EXTENSIONS'
 conf_BACKUP_TARGET_SIZE_MIN=$conf_BACKUP_TARGET_SIZE_MIN
 conf_BACKUP_CAMERA_FOLDER_MASK='$conf_BACKUP_CAMERA_FOLDER_MASK'
 conf_BACKUP_CLOUDS_TARGET_BASEDIR='$conf_BACKUP_CLOUDS_TARGET_BASEDIR'
@@ -699,6 +704,12 @@ CONFIGDATA;
 					<input type="checkbox" id="conf_BACKUP_MOVE_FILES" name="conf_BACKUP_MOVE_FILES"<?php echo $config['conf_BACKUP_MOVE_FILES']=="1"?" checked":""; ?>>
 					<label for="conf_BACKUP_MOVE_FILES"><?php echo L::config_backup_move_files_label; ?></label><br />
 					<br />
+					<input type="checkbox" id="conf_BACKUP_MEDIA_ONLY" name="conf_BACKUP_MEDIA_ONLY"<?php echo $config['conf_BACKUP_MEDIA_ONLY']=="1"?" checked":""; ?>>
+					<label for="conf_BACKUP_MEDIA_ONLY"><?php echo L::config_backup_media_only_label; ?></label><br />
+					<?php echo L::config_backup_media_only_desc; ?><br />
+					<input type="text" id="conf_BACKUP_MEDIA_ONLY_EXTENSIONS" name="conf_BACKUP_MEDIA_ONLY_EXTENSIONS" size="60" value="<?php echo htmlspecialchars($config['conf_BACKUP_MEDIA_ONLY_EXTENSIONS']); ?>">
+					<label for="conf_BACKUP_MEDIA_ONLY_EXTENSIONS"><?php echo L::config_backup_media_only_ext_label; ?></label><br />
+					<br />
 					<input type="checkbox" id="conf_BACKUP_RENAME_FILES" name="conf_BACKUP_RENAME_FILES"<?php echo $config['conf_BACKUP_RENAME_FILES']=="1"?" checked":""; ?>>
 					<label for="conf_BACKUP_RENAME_FILES"><?php echo L::config_backup_rename_header; ?><br /></label><br />
 					<?php echo L::config_backup_rename_desc; ?><br />
@@ -864,6 +875,9 @@ CONFIGDATA;
 							<h5><?php echo L::config_backup_move_files_header; ?></h5>
 								<input type="checkbox" id="conf_BACKUP_DEFAULT2_MOVE_FILES" name="conf_BACKUP_DEFAULT2_MOVE_FILES"<?php echo $config['conf_BACKUP_DEFAULT2_MOVE_FILES']=="1"?" checked":""; ?>>
 								<label for="conf_BACKUP_DEFAULT2_MOVE_FILES"><?php echo L::config_backup_move_files_label; ?></label><br />
+								<br />
+								<input type="checkbox" id="conf_BACKUP_DEFAULT2_SKIP_IF_UNREACHABLE" name="conf_BACKUP_DEFAULT2_SKIP_IF_UNREACHABLE"<?php echo $config['conf_BACKUP_DEFAULT2_SKIP_IF_UNREACHABLE']=="1"?" checked":""; ?>>
+								<label for="conf_BACKUP_DEFAULT2_SKIP_IF_UNREACHABLE"><?php echo L::config_backup_default2_skip_if_unreachable_label; ?></label><br />
 				</details>
 			</details>
 		</div>

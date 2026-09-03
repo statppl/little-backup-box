@@ -1322,6 +1322,28 @@ def extractService(DeviceName):
 
 	return(DevicePart, CloudPart)
 
+def cloud_remote_reachable(RCLONE_CONFIG_FILE, ServiceName, timeout=8):
+	# Quick check whether an rclone remote can be reached and authenticated.
+	# Used to skip the secondary backup when the box is away from the target network.
+
+	try:
+		Result	= subprocess.run(
+			[
+				'/usr/bin/rclone', 'lsd', f'{ServiceName}:',
+				'--config', RCLONE_CONFIG_FILE,
+				'--contimeout', '5s',
+				'--timeout', f'{timeout}s',
+				'--retries', '1',
+				'--low-level-retries', '1'
+			],
+			stdout=subprocess.DEVNULL,
+			stderr=subprocess.DEVNULL,
+			timeout=timeout + 5
+		)
+		return(Result.returncode == 0)
+	except Exception:
+		return(False)
+
 
 
 if __name__ == "__main__":
