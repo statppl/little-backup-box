@@ -569,7 +569,11 @@
     "smb_password_header": "Passwort",
     "smb_password_label": "Passwort für den SMB-/CIFS-Server",
     "smb_version_header": "SMB-Protokollversion",
-    "smb_version_label": "mount.cifs-Protokollversion: 1.0 für alte Apple Time Capsules / AirPort-Laufwerke, 2.0 oder 3.0 für neuere Server"
+    "smb_version_label": "mount.cifs-Protokollversion: 1.0 für alte Apple Time Capsules / AirPort-Laufwerke, 2.0 oder 3.0 für neuere Server",
+    "smb_sec_header": "Sicherheitsmodus",
+    "smb_sec_label": "mount.cifs-Authentifizierung (sec=). Alte Apple Time Capsules benötigen meist 'ntlm'. Für moderne Server bei 'default' belassen.",
+    "smb_options_header": "Zusätzliche Mount-Optionen",
+    "smb_options_label": "Optionale zusätzliche, durch Komma getrennte mount.cifs-Optionen (fortgeschritten), z. B. 'domain=WORKGROUP'"
   },
   "tools": {
     "tools": "Werkzeug",

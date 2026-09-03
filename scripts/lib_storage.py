@@ -393,6 +393,8 @@ class storage(object):
 		conf_SMB_PATH		= self.__setup.get_val('conf_SMB_PATH').strip().strip('/')
 		conf_SMB_USER		= self.__setup.get_val('conf_SMB_USER').strip()
 		conf_SMB_VERSION	= self.__setup.get_val('conf_SMB_VERSION').strip() or '1.0'
+		conf_SMB_SEC		= self.__setup.get_val('conf_SMB_SEC').strip()
+		conf_SMB_OPTIONS	= self.__setup.get_val('conf_SMB_OPTIONS').strip().strip(',')
 		try:
 			conf_SMB_PASSWORD	= base64.b64decode(self.__setup.get_val('conf_SMB_PASSWORD')).decode('utf-8')
 		except:
@@ -413,6 +415,12 @@ class storage(object):
 			self.__display.message([f":{self.__lan.l('box_backup_connect_target_1')}", f":{self.__lan.l('box_backup_connect_target_2')}"])
 
 			MountOptions	= f"vers={conf_SMB_VERSION},uid={self.__mount_uid},gid={self.__mount_gid},file_mode=0770,dir_mode=0770,iocharset=utf8,nounix,noserverino,nobrl"
+
+			if conf_SMB_SEC and conf_SMB_SEC != 'default':
+				MountOptions	+= f",sec={conf_SMB_SEC}"
+
+			if conf_SMB_OPTIONS:
+				MountOptions	+= f",{conf_SMB_OPTIONS}"
 
 			CredentialsFile	= None
 			if conf_SMB_USER:

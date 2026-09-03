@@ -332,6 +332,8 @@ class setup(object):
 					'conf_SMB_USER':									{'value': '', 'type': 'str'},
 					'conf_SMB_PASSWORD':								{'value': '', 'type': 'str'},
 					'conf_SMB_VERSION':									{'value': '1.0', 'type': 'str'},
+					'conf_SMB_SEC':										{'value': 'default', 'type': 'str'},
+					'conf_SMB_OPTIONS':									{'value': '', 'type': 'str'},
 					'conf_WIFI_COUNTRY':								{'value': 'GB', 'type': 'str'},
 					'conf_WIFI_PASSWORD_TYPE':							{'value': 'static', 'type': 'str'}, # use password from 'static' or 'dynamic' (for wifi by qr only)
 					'conf_WIFI_PASSWORD':								{'value': '.', 'type': 'str'}, # '.' is recogniced as marker of a new variable

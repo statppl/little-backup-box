@@ -438,6 +438,8 @@ conf_SMB_PATH='$conf_SMB_PATH'
 conf_SMB_USER='$conf_SMB_USER'
 conf_SMB_PASSWORD='$conf_SMB_PASSWORD'
 conf_SMB_VERSION='$conf_SMB_VERSION'
+conf_SMB_SEC='$conf_SMB_SEC'
+conf_SMB_OPTIONS='$conf_SMB_OPTIONS'
 conf_WIFI_COUNTRY='$conf_WIFI_COUNTRY'
 conf_WIFI_PASSWORD_TYPE='$conf_WIFI_PASSWORD_TYPE'
 conf_WIFI_PASSWORD='$conf_WIFI_PASSWORD'
@@ -1645,6 +1647,20 @@ CONFIGDATA;
 							}
 						?>
 					</select>
+
+				<h3><?php echo L::config_smb_sec_header; ?></h3>
+					<label for="conf_SMB_SEC"><?php echo L::config_smb_sec_label; ?></label><br />
+					<select name="conf_SMB_SEC" id="conf_SMB_SEC">
+						<?php
+							foreach(array('default', 'ntlmssp', 'ntlmv2', 'ntlm', 'ntlmv2i', 'ntlmi', 'none') as $SmbSec) {
+								echo "<option value='" . $SmbSec . "'" . ($config['conf_SMB_SEC'] == $SmbSec ? " selected" : "") . ">" . $SmbSec . "</option>";
+							}
+						?>
+					</select>
+
+				<h3><?php echo L::config_smb_options_header; ?></h3>
+					<label for="conf_SMB_OPTIONS"><?php echo L::config_smb_options_label; ?></label><br />
+					<input type="text" id="conf_SMB_OPTIONS" name="conf_SMB_OPTIONS" size="40" value="<?php echo htmlspecialchars($config['conf_SMB_OPTIONS'], ENT_QUOTES, 'UTF-8'); ?>">
 			</details>
 		</div>
 
