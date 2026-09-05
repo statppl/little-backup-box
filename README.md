@@ -2,6 +2,60 @@
 <img src="https://github.com/outdoorbits/little-backup-box/raw/main/scripts/img/little-backup-box-color.png" alt="Little Backup Box" style="height: 4em;">
 
 <a href="#installation"><b>Jump to installation instructions</b></a>
+
+---
+
+## This fork's changes
+
+This fork ([statppl/little-backup-box](https://github.com/statppl/little-backup-box), branch
+`media-only-and-timecapsule-backup`) adds two things to the default backup behavior:
+
+1. **Media-only backups.** Copy only photo/video/audio files to a backup target, skipping sidecars,
+   catalogs, thumbnail folders, and anything else not in an editable extension list.
+   Setup → Backup section → **"Back up media files only"** (checkbox + extension list).
+
+2. **SMB/CIFS as a secondary backup target** (e.g. an Apple Time Capsule / AirPort disk), alongside
+   the existing cloud and rsync-server secondary targets. Configured under Setup →
+   **"SMB / CIFS share"**, then selectable as the secondary backup (`USB → SMB share`).
+   - Mounted via [`smbnetfs`](https://sourceforge.net/projects/smbnetfs/) (a FUSE filesystem built on
+     Samba's userspace `libsmbclient`) rather than the kernel's `cifs.ko` — many distro kernels
+     (including the stock Raspberry Pi OS kernel) disable the legacy NTLMv1 authentication that
+     older Apple base stations require, and the kernel driver has no way around that. `smbnetfs`
+     isn't subject to that restriction.
+   - An optional **"skip the secondary backup when its target can't be reached"** setting lets the
+     primary (local) backup keep working normally when the box is away from the SMB target's network
+     (e.g. travelling with the box, away from a home Time Capsule).
+
+See `git log` on this branch for the full commit-by-commit detail.
+
+### Deploying / updating this fork on the Pi
+
+The stock web-UI updater always re-clones the upstream `outdoorbits/little-backup-box` repository and
+would silently discard these changes (only `config.cfg` survives an update), so this fork is deployed
+and updated manually instead of through that updater:
+
+```bash
+# one-time setup
+git clone --branch media-only-and-timecapsule-backup \
+  https://github.com/statppl/little-backup-box.git ~/lbb-src
+sudo apt-get install -y smbnetfs
+```
+
+Then whenever this fork gets new commits, run `~/deploy-lbb-when-updated.sh`:
+
+```bash
+#!/bin/bash
+set -e
+cd ~/lbb-src && git pull
+sudo rsync -a --exclude config.cfg scripts/ /var/www/little-backup-box/
+sudo python3 /var/www/little-backup-box/lib_setup.py
+```
+
+(`config.cfg` — your settings — is preserved; `lib_setup.py` writes in any newly-added setting keys
+with their defaults.)
+
+---
+
 <h2>About</h2>
 Little Backup Box turns a Raspberry Pi into a powerful, mobile backup and media management hub - ideal for photographers, travelers, and professionals working on the go.
 
