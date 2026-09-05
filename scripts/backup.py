@@ -1888,9 +1888,17 @@ if __name__ == "__main__":
 		(args['SecTargetName'] != '') \
 	) == True # else could be None
 
-	# skip the secondary backup if its target is unreachable (e.g. the box is away from home)
+	# skip the secondary backup if its target is unreachable (e.g. the box is away from home).
+	# retry a few times first: at boot the @reboot job can start before the network is up.
 	if SecondaryBackupFollows and setup.get_val('conf_BACKUP_DEFAULT2_SKIP_IF_UNREACHABLE'):
-		if not lib_storage.secondary_target_reachable(setup, args['SecTargetName']):
+		SecTargetReachable	= False
+		for ReachabilityAttempt in range(4):
+			if lib_storage.secondary_target_reachable(setup, args['SecTargetName']):
+				SecTargetReachable	= True
+				break
+			time.sleep(5)
+
+		if not SecTargetReachable:
 			display.message([f":{lan.l('box_backup_secondary')}", f":{lan.l('box_backup_secondary_skipped_unreachable')}"])
 			SecondaryBackupFollows	= False
 
