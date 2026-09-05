@@ -1642,7 +1642,7 @@ CONFIGDATA;
 					<label for="conf_SMB_VERSION"><?php echo L::config_smb_version_label; ?></label><br />
 					<select name="conf_SMB_VERSION" id="conf_SMB_VERSION">
 						<?php
-							foreach(array('1.0', '2.0', '2.1', '3.0', '3.1.1') as $SmbVersion) {
+							foreach(array('default', '1.0', '2.0', '2.1', '3.0', '3.1.1') as $SmbVersion) {
 								echo "<option value='" . $SmbVersion . "'" . ($config['conf_SMB_VERSION'] == $SmbVersion ? " selected" : "") . ">" . $SmbVersion . "</option>";
 							}
 						?>
@@ -1652,7 +1652,7 @@ CONFIGDATA;
 					<label for="conf_SMB_SEC"><?php echo L::config_smb_sec_label; ?></label><br />
 					<select name="conf_SMB_SEC" id="conf_SMB_SEC">
 						<?php
-							foreach(array('default', 'ntlmssp', 'ntlmv2', 'ntlm', 'ntlmv2i', 'ntlmi', 'none') as $SmbSec) {
+							foreach(array('default', 'ntlmv2', 'ntlm') as $SmbSec) {
 								echo "<option value='" . $SmbSec . "'" . ($config['conf_SMB_SEC'] == $SmbSec ? " selected" : "") . ">" . $SmbSec . "</option>";
 							}
 						?>

@@ -569,11 +569,11 @@
     "smb_password_header": "Mot de passe",
     "smb_password_label": "Mot de passe du serveur SMB/CIFS",
     "smb_version_header": "Version du protocole SMB",
-    "smb_version_label": "Version du protocole mount.cifs : 1.0 pour les anciennes Apple Time Capsule / disques AirPort, 2.0 ou 3.0 pour les serveurs plus récents",
-    "smb_sec_header": "Mode de sécurité",
-    "smb_sec_label": "Authentification mount.cifs (sec=). Les anciennes Apple Time Capsule ont généralement besoin de 'ntlm'. Laisser sur 'default' pour les serveurs modernes.",
-    "smb_options_header": "Options de montage supplémentaires",
-    "smb_options_label": "Options mount.cifs supplémentaires séparées par des virgules (avancé), p. ex. 'domain=WORKGROUP'"
+    "smb_version_label": "Dialecte SMB à utiliser : 'default' négocie automatiquement, '1.0' est nécessaire pour les anciennes Apple Time Capsule / disques AirPort, '2.0'/'3.0' pour les serveurs plus récents",
+    "smb_sec_header": "Mode d'authentification",
+    "smb_sec_label": "Mode d'authentification NTLM. Les anciennes Apple Time Capsule ont généralement besoin de 'ntlm' (NTLMv1). Laisser sur 'default' pour les serveurs modernes.",
+    "smb_options_header": "Options smb.conf supplémentaires",
+    "smb_options_label": "Options client Samba supplémentaires (avancé), séparées par des points-virgules, p. ex. 'client use spnego = No'"
   },
   "tools": {
     "tools": "Outils",

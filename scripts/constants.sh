@@ -10,6 +10,7 @@ const_MOUNTPOINT_TECH_NVME_SOURCE="/mnt/tech_NVME_source"
 const_MOUNTPOINT_CLOUD_TARGET="cloud_target"
 const_MOUNTPOINT_CLOUD_SOURCE="cloud_source"
 const_MOUNTPOINT_SMB_TARGET="smb_target"
+const_MOUNTPOINT_TECH_SMB_TARGET="/mnt/tech_SMB_target"
 const_MOUNT_LOCAL_TIMEOUT=30
 const_MOUNT_CLOUD_TIMEOUT=30
 const_INTERNAL_BACKUP_DIR="internal"

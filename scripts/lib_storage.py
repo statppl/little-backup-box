@@ -90,6 +90,7 @@ class storage(object):
 		self.__const_MOUNTPOINT_CLOUD_SOURCE					= self.__setup.get_val('const_MOUNTPOINT_CLOUD_SOURCE')
 
 		self.__const_MOUNTPOINT_SMB_TARGET						= self.__setup.get_val('const_MOUNTPOINT_SMB_TARGET')
+		self.__const_MOUNTPOINT_TECH_SMB_TARGET					= self.__setup.get_val('const_MOUNTPOINT_TECH_SMB_TARGET')
 
 		self.__const_INTERNAL_BACKUP_DIR						= self.__setup.get_val('const_INTERNAL_BACKUP_DIR')
 		self.__const_LBB_FTP_BACKUP_SUB_DIR						= self.__setup.get_val('const_LBB_FTP_BACKUP_SUB_DIR')
@@ -384,23 +385,76 @@ class storage(object):
 
 		return(configured)
 
+	# smbnetfs reads its config from a fixed directory (normally ~/.smb); since backup.py always
+	# runs as root (via sudo), use an explicit absolute path instead of relying on $HOME.
+	__SMB_CONFIG_DIR	= '/root/.smb'
+
+	def __write_smbnetfs_config(self, conf_SMB_HOST, conf_SMB_USER, conf_SMB_PASSWORD, conf_SMB_VERSION, conf_SMB_SEC, conf_SMB_OPTIONS):
+		# Samba protocol dialect names for the version picker (see `man smb.conf`, "client max protocol")
+		VersionToProtocol	= {'1.0': 'NT1', '2.0': 'SMB2', '2.1': 'SMB2_10', '3.0': 'SMB3', '3.1.1': 'SMB3_11'}
+
+		os.makedirs(self.__SMB_CONFIG_DIR, exist_ok=True)
+		os.chmod(self.__SMB_CONFIG_DIR, 0o700)
+
+		# smbnetfs.auth: credentials for this host. Guest access if no user configured.
+		AuthUser		= conf_SMB_USER if conf_SMB_USER else 'guest'
+		AuthPassword	= conf_SMB_PASSWORD if conf_SMB_USER else ''
+		AuthLine		= 'auth "{}" "{}" "{}"\n'.format(conf_SMB_HOST.replace('"', ''), AuthUser.replace('"', ''), AuthPassword.replace('"', ''))
+		AuthFile		= os.path.join(self.__SMB_CONFIG_DIR, 'smbnetfs.auth')
+		with open(AuthFile, 'w') as AuthHandle:
+			AuthHandle.write(AuthLine)
+		os.chmod(AuthFile, 0o600)
+
+		# smbnetfs.host: no static hosts needed, network browsing/direct access covers it; must exist (included below)
+		HostFile	= os.path.join(self.__SMB_CONFIG_DIR, 'smbnetfs.host')
+		if not os.path.isfile(HostFile):
+			open(HostFile, 'w').close()
+
+		# smbnetfs.conf: just pulls in the two files above
+		with open(os.path.join(self.__SMB_CONFIG_DIR, 'smbnetfs.conf'), 'w') as ConfHandle:
+			ConfHandle.write('include "smbnetfs.auth"\ninclude "smbnetfs.host"\n')
+
+		# smb.conf: the actual Samba client options (protocol version, NTLM mode, ...) - smbnetfs
+		# does NOT understand these itself, it loads them via libsmbclient from a real smb.conf.
+		SmbConfLines	= ['[global]']
+
+		Protocol	= VersionToProtocol.get(conf_SMB_VERSION)
+		if Protocol:
+			SmbConfLines	+= [f'   client min protocol = {Protocol}', f'   client max protocol = {Protocol}']
+
+		if conf_SMB_SEC == 'ntlm':
+			SmbConfLines	+= ['   client ntlmv2 auth = No', '   client lanman auth = No']
+		elif conf_SMB_SEC == 'ntlmv2':
+			SmbConfLines	+= ['   client ntlmv2 auth = Yes']
+
+		for ExtraOption in conf_SMB_OPTIONS.split(';'):
+			ExtraOption	= ExtraOption.strip()
+			if ExtraOption:
+				SmbConfLines	+= [f'   {ExtraOption}']
+
+		with open(os.path.join(self.__SMB_CONFIG_DIR, 'smb.conf'), 'w') as SmbConfHandle:
+			SmbConfHandle.write('\n'.join(SmbConfLines) + '\n')
+
 	def __mount_smb(self):
-		# mounts an SMB/CIFS share (e.g. an Apple Time Capsule) as a local target via mount.cifs.
+		# mounts an SMB/CIFS share (e.g. an Apple Time Capsule) as a local target.
+		# Uses smbnetfs (a FUSE filesystem built on Samba's userspace libsmbclient) rather than the
+		# kernel's cifs.ko, because many distro kernels disable NTLMv1/weak-hash support needed by
+		# older servers (e.g. Apple Time Capsules), while libsmbclient still supports it.
 		# Connection details come from the conf_SMB_* settings. Target role only.
 
 		conf_SMB_HOST		= self.__setup.get_val('conf_SMB_HOST').strip()
 		conf_SMB_SHARE		= self.__setup.get_val('conf_SMB_SHARE').strip().strip('/')
 		conf_SMB_PATH		= self.__setup.get_val('conf_SMB_PATH').strip().strip('/')
 		conf_SMB_USER		= self.__setup.get_val('conf_SMB_USER').strip()
-		conf_SMB_VERSION	= self.__setup.get_val('conf_SMB_VERSION').strip() or '1.0'
+		conf_SMB_VERSION	= self.__setup.get_val('conf_SMB_VERSION').strip()
 		conf_SMB_SEC		= self.__setup.get_val('conf_SMB_SEC').strip()
-		conf_SMB_OPTIONS	= self.__setup.get_val('conf_SMB_OPTIONS').strip().strip(',')
+		conf_SMB_OPTIONS	= self.__setup.get_val('conf_SMB_OPTIONS').strip()
 		try:
 			conf_SMB_PASSWORD	= base64.b64decode(self.__setup.get_val('conf_SMB_PASSWORD')).decode('utf-8')
 		except:
 			conf_SMB_PASSWORD	= ''
 
-		if not (conf_SMB_HOST and conf_SMB_SHARE and self.MountPoint):
+		if not (conf_SMB_HOST and conf_SMB_SHARE and self.MountPoint and self.__TechMountPoint):
 			self.__log.message('mount smb: not configured (need conf_SMB_HOST and conf_SMB_SHARE)', 2)
 			return(False)
 
@@ -411,42 +465,27 @@ class storage(object):
 		if not MOUNTED:
 			self.__clean_mountpoint()
 			self.createPath()
+			pathlib.Path(self.__TechMountPoint).mkdir(parents=True, exist_ok=True)
 
 			self.__display.message([f":{self.__lan.l('box_backup_connect_target_1')}", f":{self.__lan.l('box_backup_connect_target_2')}"])
 
-			MountOptions	= f"vers={conf_SMB_VERSION},uid={self.__mount_uid},gid={self.__mount_gid},file_mode=0770,dir_mode=0770,iocharset=utf8,nounix,noserverino,nobrl"
-
-			if conf_SMB_SEC and conf_SMB_SEC != 'default':
-				MountOptions	+= f",sec={conf_SMB_SEC}"
-
-			if conf_SMB_OPTIONS:
-				MountOptions	+= f",{conf_SMB_OPTIONS}"
-
-			CredentialsFile	= None
-			if conf_SMB_USER:
-				CredentialsFile	= '/run/lbb_smb_credentials'
-				try:
-					with open(CredentialsFile, 'w') as CredentialsHandle:
-						CredentialsHandle.write(f"username={conf_SMB_USER}\npassword={conf_SMB_PASSWORD}\n")
-					os.chmod(CredentialsFile, 0o600)
-					MountOptions	+= f",credentials={CredentialsFile}"
-				except:
-					MountOptions	+= f",username={conf_SMB_USER},password={conf_SMB_PASSWORD}"
-					CredentialsFile	= None
-			else:
-				MountOptions	+= ",guest"
-
-			Command	= ['/usr/bin/mount', '-t', 'cifs', f"//{conf_SMB_HOST}/{conf_SMB_SHARE}", self.MountPoint, '-o', MountOptions]
 			try:
-				subprocess.run(Command, stderr=subprocess.PIPE, timeout=45)
+				self.__write_smbnetfs_config(conf_SMB_HOST, conf_SMB_USER, conf_SMB_PASSWORD, conf_SMB_VERSION, conf_SMB_SEC, conf_SMB_OPTIONS)
+
+				Command	= ['/usr/bin/smbnetfs', '-o', f'config={os.path.join(self.__SMB_CONFIG_DIR, "smbnetfs.conf")}', self.__TechMountPoint]
+				subprocess.run(Command, env={**os.environ, 'HOME': '/root'}, stderr=subprocess.PIPE, timeout=45)
+
+				# wait for the specific host/share to become reachable through the FUSE mount
+				SharePath	= os.path.join(self.__TechMountPoint, conf_SMB_HOST, conf_SMB_SHARE)
+				EndTime	= time.time() + self.__setup.get_val('const_MOUNT_CLOUD_TIMEOUT')
+				while not os.path.isdir(SharePath) and time.time() < EndTime:
+					time.sleep(0.5)
+
+				if os.path.isdir(SharePath):
+					Command	= ['/usr/bin/bindfs', f'--force-user={self.__mount_user}', f'--force-group={self.__mount_group}', '--perms=0770', SharePath, self.MountPoint]
+					subprocess.run(Command, stderr=subprocess.PIPE, timeout=45)
 			except Exception as ExceptionText:
 				self.__log.message(f"mount smb //{conf_SMB_HOST}/{conf_SMB_SHARE}: {ExceptionText}", 2)
-
-			if CredentialsFile:
-				try:
-					os.remove(CredentialsFile)
-				except:
-					pass
 
 			MOUNTED	= self.mounted()
 
@@ -922,7 +961,7 @@ class storage(object):
 			self.__TechMountPoint	= ''
 			self.MountPoint			= os.path.join(self.__const_MEDIA_DIR, self.__const_INTERNAL_BACKUP_DIR)
 		elif self.StorageType == 'smb':
-			self.__TechMountPoint	= ''
+			self.__TechMountPoint	= self.__const_MOUNTPOINT_TECH_SMB_TARGET
 			self.MountPoint			= os.path.join(self.__const_MEDIA_DIR, self.__const_MOUNTPOINT_SMB_TARGET)
 		elif self.StorageType == 'ftp':
 			if not self.PartnerDevice is None:
@@ -1043,6 +1082,7 @@ def get_mountPoints(setup, parts, path_list_only):
 	const_MOUNTPOINT_CLOUD_TARGET			= setup.get_val('const_MOUNTPOINT_CLOUD_TARGET')
 	const_MOUNTPOINT_CLOUD_SOURCE			= setup.get_val('const_MOUNTPOINT_CLOUD_SOURCE')
 	const_MOUNTPOINT_SMB_TARGET				= setup.get_val('const_MOUNTPOINT_SMB_TARGET')
+	const_MOUNTPOINT_TECH_SMB_TARGET		= setup.get_val('const_MOUNTPOINT_TECH_SMB_TARGET')
 
 	mountPoints	= {}
 
@@ -1068,7 +1108,8 @@ def get_mountPoints(setup, parts, path_list_only):
 				const_MOUNTPOINT_TECH_USB_TARGET:									'target_usb',
 				const_MOUNTPOINT_TECH_USB_SOURCE:									'source_usb',
 				const_MOUNTPOINT_TECH_NVME_TARGET:									'target_nvme',
-				const_MOUNTPOINT_TECH_NVME_SOURCE:									'source_nvme'
+				const_MOUNTPOINT_TECH_NVME_SOURCE:									'source_nvme',
+				const_MOUNTPOINT_TECH_SMB_TARGET:									'target_smb'
 			}
 		)
 
