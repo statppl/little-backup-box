@@ -94,9 +94,12 @@
 		'cloud'		=> array_merge($CloudServices_marked, $LocalNetworkServices)
 	);
 
+	$smb_configurated	= ($config['conf_SMB_HOST']=='' or $config['conf_SMB_SHARE']=='') == false;
+
 	$TargetServices			= array(
 		'usb'		=> $LocalServices,
 		'cloud'		=> $CloudServices_marked,
+		'smb'		=> $smb_configurated ? array('smb') : array(),
 		'social'	=> $SocialServices_configured
 	);
 ?>
@@ -226,6 +229,9 @@
 								}
 								elseif ($LabelName == 'cloud_rsync') {
 									$LabelName		= l::box_backup_mode_cloud_rsync;
+								}
+								elseif ($LabelName == 'smb') {
+									$LabelName		= l::main_smb_button;
 								}
 								elseif ($LabelName == 'telegram') {
 									$LabelName		= l::box_backup_mode_social_telegram;
